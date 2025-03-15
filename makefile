@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra -O2
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 SOURCES = main.cpp  connect6.cpp
 TARGET = agenteConnect6
