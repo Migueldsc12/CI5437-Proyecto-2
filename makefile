@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -O2
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
-SOURCES = main.cpp  connect6.cpp
+SOURCES = main.cpp  connect6.cpp MCTS.cpp Node.cpp
 TARGET = agenteConnect6
 OBJECTS = $(SOURCES:.cpp=.o)
 
