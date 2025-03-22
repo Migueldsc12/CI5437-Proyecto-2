@@ -258,7 +258,7 @@ int main(int argc, char* argv[]) {
                     }
                 }
             }
-        }
+        }//
 
         drawGame(window, state, boardBackground, verticalLines, horizontalLines,
             letters, numbers, playerCircle, aiCircle, title,
