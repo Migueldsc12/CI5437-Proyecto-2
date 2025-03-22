@@ -207,6 +207,7 @@ int main(int argc, char* argv[]) {
 
             if (event.type == sf::Event::MouseButtonPressed) {
                 sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+    
 
                 float relativeX = mousePosition.x - offsetX;
                 float relativeY = mousePosition.y - offsetY;
@@ -232,28 +233,28 @@ int main(int argc, char* argv[]) {
                             movesLeft = 2;
                         }
                     }
+                }
+            }
 
-                    // Turno del agente
-                    if (state.currentPlayer == aiToken) {
-                        MCTS mcts(state, aiToken, tpj); 
-                        auto move = mcts.findBestMove();
-                        if (move.first != -1 && move.second != -1) {
-                            state.makeMove(move.first, move.second, aiToken);
-                            movesLeft-- ;
+            // Turno del agente
+            if (state.currentPlayer == aiToken) {
+                MCTS mcts(state, aiToken, tpj); 
+                auto move = mcts.findBestMove();
 
-                            drawGame(window, state, boardBackground, verticalLines, horizontalLines,
-                                letters, numbers, playerCircle, aiCircle, title,
-                                offsetX, offsetY, spacing, playerToken, aiToken);
+                if (move.first != -1 && move.second != -1) {
+                    state.makeMove(move.first, move.second, aiToken);
+                    movesLeft-- ;
+                    drawGame(window, state, boardBackground, verticalLines, horizontalLines,
+                        letters, numbers, playerCircle, aiCircle, title,
+                        offsetX, offsetY, spacing, playerToken, aiToken);
                             
-                            if (state.checkWin(aiToken)) {
-                                std::cout << "¡El agente ha ganado!" << std::endl;
-                                window.close();
-                            }
-                            if(movesLeft == 0){
-                                state.currentPlayer = playerToken;
-                                movesLeft = 2;
-                            }
-                        }
+                    if (state.checkWin(aiToken)) {
+                        std::cout << "¡El agente ha ganado!" << std::endl;
+                        window.close();
+                    }
+                    if(movesLeft == 0){
+                        state.currentPlayer = playerToken;
+                        movesLeft = 2;
                     }
                 }
             }
