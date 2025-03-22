@@ -9,6 +9,43 @@
 
 using namespace std;
 
+void drawGame(sf::RenderWindow& window, const State& state, const sf::RectangleShape& boardBackground,
+    const sf::VertexArray& verticalLines, const sf::VertexArray& horizontalLines,
+    const std::vector<sf::Text>& letters, const std::vector<sf::Text>& numbers,
+    sf::CircleShape& playerCircle,  sf::CircleShape& aiCircle,
+    const sf::Text& title, int offsetX, int offsetY, float spacing, int playerToken, int aiToken) {
+    
+    window.clear(sf::Color(50, 52, 55));
+    // Dibuja el fondo del tablero
+    window.draw(boardBackground);
+    // Dibuja las líneas verticales y horizontales 
+    window.draw(verticalLines);
+    window.draw(horizontalLines);
+
+    // Dibuja las coordenadas
+    for (int i = 0; i < 38; i++) {
+        window.draw(letters[i]);
+        window.draw(numbers[i]);
+    }
+
+    // Dibuja las fichas
+    for (int i = 0; i < state.size; i++) {
+        for (int j = 0; j < state.size; j++) {
+            float radius = playerCircle.getRadius();
+            if (state.current[i][j] == playerToken) {
+                playerCircle.setPosition(offsetX + i * spacing - radius, offsetY + j * spacing - radius);
+                window.draw(playerCircle);
+            } 
+            if (state.current[i][j] == aiToken) {
+                aiCircle.setPosition(offsetX + i * spacing - radius, offsetY + j * spacing - radius);
+                window.draw(aiCircle);
+            }
+        }
+    }    
+    window.draw(title);
+    window.display();
+}
+
 int main(int argc, char* argv[]) {
     // Inicializar la semilla para números aleatorios
     srand(static_cast<unsigned int>(time(0)));
@@ -38,6 +75,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // Setear el token correspondiente a la IA y el jugador
+    int aiToken = (fichas == "blancas") ? 2 : 1;
+    int playerToken = 3 - aiToken;
+
     // Inicializar el estado del juego
     State state;
 
@@ -64,7 +105,7 @@ int main(int argc, char* argv[]) {
     // Crear la ventana
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Connect6");
     sf::Image icon;
-    if (!icon.loadFromFile("monkey1.png")) {
+    if (!icon.loadFromFile("icon.png")) {
         std::cerr << "Error al cargar el icono" << std::endl;
     }
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
@@ -103,6 +144,10 @@ int main(int argc, char* argv[]) {
     sf::CircleShape black(8), white(8);
     black.setFillColor(sf::Color::Black);
     white.setFillColor(sf::Color::White);
+
+    // Setear fichas segun el turno
+    sf::CircleShape aiCircle = (aiToken == 1) ? black : white;
+    sf::CircleShape playerCircle = (playerToken == 1) ? black : white;
 
     // Líneas del tablero
     sf::VertexArray verticalLines(sf::Lines, boardLines * 2);
@@ -151,6 +196,8 @@ int main(int argc, char* argv[]) {
         numbers.push_back(numbersBelow);
     }
 
+    int movesLeft = 1;
+
     // Bucle principal del juego
     while (window.isOpen()) {
         sf::Event event;
@@ -169,57 +216,52 @@ int main(int argc, char* argv[]) {
                     int row = round(relativeY / spacing);
 
                     // Turno del humano
-                    if (state.currentPlayer == 1 && state.makeMove(col, row, 1)) {
-                        if (state.checkWin(1)) {
+                    if (state.currentPlayer == playerToken && state.makeMove(col, row, playerToken)){
+                        movesLeft-- ;
+                        
+                        drawGame(window, state, boardBackground, verticalLines, horizontalLines,
+                            letters, numbers, playerCircle, aiCircle, title,
+                            offsetX, offsetY, spacing, playerToken, aiToken);
+
+                        if (state.checkWin(playerToken)) {
                             std::cout << "¡Has ganado!" << std::endl;
                             window.close();
                         }
-                        state.currentPlayer = 2; // Cambia el turno al agente
+                        if(movesLeft == 0){
+                            state.currentPlayer = aiToken;
+                            movesLeft = 2;
+                        }
                     }
 
                     // Turno del agente
-                    if (state.currentPlayer == 2) {
-                        MCTS mcts(state, 2, tpj); // 2: Jugador agente
+                    if (state.currentPlayer == aiToken) {
+                        MCTS mcts(state, aiToken, tpj); 
                         auto move = mcts.findBestMove();
                         if (move.first != -1 && move.second != -1) {
-                            state.makeMove(move.first, move.second, 2);
-                            if (state.checkWin(2)) {
+                            state.makeMove(move.first, move.second, aiToken);
+                            movesLeft-- ;
+
+                            drawGame(window, state, boardBackground, verticalLines, horizontalLines,
+                                letters, numbers, playerCircle, aiCircle, title,
+                                offsetX, offsetY, spacing, playerToken, aiToken);
+                            
+                            if (state.checkWin(aiToken)) {
                                 std::cout << "¡El agente ha ganado!" << std::endl;
                                 window.close();
                             }
-                            state.currentPlayer = 1; // Cambia el turno al humano
+                            if(movesLeft == 0){
+                                state.currentPlayer = playerToken;
+                                movesLeft = 2;
+                            }
                         }
                     }
                 }
             }
         }
 
-        // Dibujar el tablero y las fichas
-        window.clear(sf::Color(50, 52, 55));
-        window.draw(boardBackground);
-        window.draw(verticalLines);
-        window.draw(horizontalLines);
-
-        for (int i = 0; i < 38; i++) {
-            window.draw(letters[i]);
-            window.draw(numbers[i]);
-        }
-
-        // Dibujar las fichas
-        for (int i = 0; i < state.size; i++) {
-            for (int j = 0; j < state.size; j++) {
-                if (state.current[i][j] == 1) {
-                    black.setPosition(offsetX + i * spacing - black.getRadius(), offsetY + j * spacing - black.getRadius());
-                    window.draw(black);
-                } else if (state.current[i][j] == 2) {
-                    white.setPosition(offsetX + i * spacing - white.getRadius(), offsetY + j * spacing - white.getRadius());
-                    window.draw(white);
-                }
-            }
-        }
-
-        window.draw(title);
-        window.display();
+        drawGame(window, state, boardBackground, verticalLines, horizontalLines,
+            letters, numbers, playerCircle, aiCircle, title,
+            offsetX, offsetY, spacing, playerToken, aiToken);
     }
 
     return 0;
