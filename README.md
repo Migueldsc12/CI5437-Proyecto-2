@@ -38,7 +38,7 @@ Se recomienda ejecutar los siguientes comandos:
      ```
     
     Donde el valor para `fichas` representa el color de las fichas con las que
-    ue jugará el agente y `tpj` es el tiempo máximo, en segundos, que el agente 
+    jugará el agente y `tpj` es el tiempo máximo, en segundos, que el agente 
     puede usar para computar su jugada.
     - Se abrirá una ventana de juego con el tablero. Haga click sobre las 
     posiciones donde desee jugar. Una vez finalizado el juego, éste se cerrará 
