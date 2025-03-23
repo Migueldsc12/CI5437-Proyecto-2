@@ -47,7 +47,6 @@ Se recomienda ejecutar los siguientes comandos:
 
 # Autores
 
-Nombres:
 - Laura Parilli, 17-10778
 - Miguel Salomon, 19-10274
     
