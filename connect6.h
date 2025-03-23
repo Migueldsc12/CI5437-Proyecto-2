@@ -18,8 +18,6 @@ class State {
         std::pair<int, int> findWinningOrBlockingMove(int player);
         double evaluateMove(int x, int y);
         bool checkWinAfterMove(int x, int y, int player) ;
-        int countInDirection(int x, int y, int dx, int dy, int player, int maxGaps);
-        int countInBothDirections(int x, int y, int dx, int dy, int player, int maxGaps);
     };
 
 #endif // STATE_H
