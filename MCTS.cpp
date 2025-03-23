@@ -7,8 +7,8 @@ MCTS::MCTS(State initialState, int player, double timeLimit)
 
 std::pair<int, int> MCTS::findBestMove() {
     auto startTime = std::chrono::steady_clock::now();
-
-    while (std::chrono::duration<double>(std::chrono::steady_clock::now() - startTime).count() < timeLimit) {
+    
+    while (std::chrono::duration<double>(std::chrono::steady_clock::now() - startTime).count() < timeLimit) {        
         Node* node = root;
         
         // Selección
@@ -28,7 +28,7 @@ std::pair<int, int> MCTS::findBestMove() {
         // Retropropagación
         node->backpropagate(result);
     }
-
+    
     // Selecciona el mejor movimiento basado en las visitas
     Node* bestChild = nullptr;
     int mostVisits = -1;

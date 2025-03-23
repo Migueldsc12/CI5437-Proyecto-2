@@ -15,7 +15,11 @@ class State {
         bool makeMove(int x, int y, int player);
         std::vector<std::pair<int, int>> getAvailableMoves();
         bool isTerminal();
-        std::pair<int, int> findWinningOrBlockingMove(int opponent);
+        std::pair<int, int> findWinningOrBlockingMove(int player);
+        double evaluateMove(int x, int y);
+        bool checkWinAfterMove(int x, int y, int player) ;
+        int countInDirection(int x, int y, int dx, int dy, int player, int maxGaps);
+        int countInBothDirections(int x, int y, int dx, int dy, int player, int maxGaps);
     };
 
 #endif // STATE_H
