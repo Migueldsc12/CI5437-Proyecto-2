@@ -47,7 +47,7 @@ void drawGame(sf::RenderWindow& window, const State& state, const sf::RectangleS
     window.draw(title);
 
     // Dibuja los rectángulos y texto para mostrar el turno y las fichas
-    sf::RectangleShape turnIndicator(sf::Vector2f(140, 50));
+    sf::RectangleShape turnIndicator(sf::Vector2f(170, 40));
     turnIndicator.setPosition(10, 10);
     turnIndicator.setFillColor(sf::Color(232, 95, 67));
 
