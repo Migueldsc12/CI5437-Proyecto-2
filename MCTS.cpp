@@ -23,10 +23,6 @@ void MCTS::deleteTree(Node* node) {
 std::pair<int, int> MCTS::findBestMove() {
     auto startTime = std::chrono::steady_clock::now();
 
-    #pragma omp parallel
-    {
-        #pragma omp single
-        {
             while (std::chrono::duration<double>(std::chrono::steady_clock::now() - startTime).count() < timeLimit) {
                 #pragma omp task
                 {
@@ -50,8 +46,6 @@ std::pair<int, int> MCTS::findBestMove() {
                     node->backpropagate(result);
                 }
             }
-        }
-    }
 
     // Selecciona el mejor movimiento basado en las visitas.
     Node* bestChild = nullptr;
