@@ -20,6 +20,10 @@ public:
     std::vector<std::unique_ptr<Node>> children;
     int visits;
     double value;
+
+private:
+    // Función heurística para evaluar la calidad de un nodo.
+    double heuristicScore(Node* node);
 };
 
 #endif

@@ -14,27 +14,41 @@ Node* Node::selectChild() {
     double bestValue = -std::numeric_limits<double>::infinity();
 
     for (auto& child : children) {
-        // Verificar si el hijo tiene una jugada ganadora.
-        auto winningMove = child->state.findWinningOrBlockingMove(child->state.currentPlayer);
-        if (winningMove.first != -1 && winningMove.second != -1) {
-            return child.get(); // Seleccionar el hijo si tiene una jugada ganadora.
-        }
+        // Calcular el valor con una componente heurística.
+        double uctValue = child->value / child->visits + std::sqrt(2 * std::log(visits) / child->visits) + heuristicScore(child.get());
 
-        // Verificar si el hijo tiene una jugada para bloquear al oponente.
-        auto blockingMove = child->state.findWinningOrBlockingMove(3 - (child->state.currentPlayer));
-        if (blockingMove.first != -1 && blockingMove.second != -1) {
-            return child.get(); // Seleccionar el hijo si tiene una jugada bloqueadora.
-        }
-
-        // Calcular el valor UCB1 para el hijo.
-        double uctValue = child->value / child->visits + std::sqrt(2 * std::log(visits) / child->visits);
         if (uctValue > bestValue) {
-            selected = child.get(); // Seleccionar el hijo con el mejor valor UCB1.
+            selected = child.get();
             bestValue = uctValue;
         }
     }
 
-    return selected; // Devolver el hijo seleccionado.
+    return selected;
+}
+
+// Función heurística para evaluar la calidad de un nodo.
+double Node::heuristicScore(Node* node) {
+    double score = 0.0;
+
+    // Priorizar movimientos que bloqueen al oponente.
+    auto blockingMove = node->state.findWinningOrBlockingMove(3 - node->state.currentPlayer);
+    if (blockingMove.first != -1 && blockingMove.second != -1) {
+        score += 1000; // Prioridad máxima para bloquear.
+    }
+
+    // Priorizar movimientos que extiendan líneas propias.
+    auto winningMove = node->state.findWinningOrBlockingMove(node->state.currentPlayer);
+    if (winningMove.first != -1 && winningMove.second != -1) {
+        score += 500; // Prioridad alta para ganar.
+    }
+
+    // Priorizar movimientos cercanos al centro.
+    int center = node->state.size / 2;
+    double distanceToCenter = sqrt((node->move.first - center) * (node->move.first - center) +
+                                   (node->move.second - center) * (node->move.second - center));
+    score += (node->state.size - distanceToCenter) * 2; // Aumentar puntuación por cercanía al centro.
+
+    return score;
 }
 
 // Expande el nodo actual generando nuevos hijos a partir de movimientos posibles.

@@ -73,8 +73,9 @@ bool State::checkWinAfterMove(int x, int y, int player) {
 
 // Evalúa la puntuación de un movimiento en función de su impacto en el juego.
 double State::evaluateMove(int x, int y) {
-    double score = 0.0; // Puntuación base del movimiento.
+    double score = 0.0;
 
+    // Direcciones posibles para evaluar patrones.
     vector<pair<int, int>> directions = {
         {-1, -1}, {-1, 0}, {-1, 1},
         {0, -1},          {0, 1},
@@ -101,7 +102,7 @@ double State::evaluateMove(int x, int y) {
         int gaps = 0;
 
         // Verificar en la dirección (dx, dy).
-        for (int k = 1; k < 4; k++) {
+        for (int k = 1; k < 6; k++) {
             int nx = x + k * dx;
             int ny = y + k * dy;
             if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
@@ -192,6 +193,17 @@ double State::evaluateMove(int x, int y) {
     int center = size / 2;
     double distanceToCenter = sqrt((x - center) * (x - center) + (y - center) * (y - center));
     score += (size - distanceToCenter) * 2; // Aumentar puntuación por cercanía al centro.
+
+    //---- Caso 5: Flexibilidad (movimientos que dejan más opciones abiertas).
+    int flexibilityScore = 0;
+    for (const auto& [dx, dy] : directions) {
+        int nx = x + dx;
+        int ny = y + dy;
+        if (nx >= 0 && nx < size && ny >= 0 && ny < size && current[nx][ny] == 0) {
+            flexibilityScore += 5; // Aumentar puntuación por movimientos que dejan opciones abiertas.
+        }
+    }
+    score += flexibilityScore; // Añadir puntuación de flexibilidad al score total.
 
     return score; // Devolver la puntuación total del movimiento.
 }
