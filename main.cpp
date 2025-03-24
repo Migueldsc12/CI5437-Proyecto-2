@@ -14,7 +14,7 @@ void drawGame(sf::RenderWindow& window, const State& state, const sf::RectangleS
     const std::vector<sf::Text>& letters, const std::vector<sf::Text>& numbers,
     sf::CircleShape& playerCircle,  sf::CircleShape& aiCircle,
     const sf::Text& title, int offsetX, int offsetY, float spacing, int playerToken, int aiToken) {
-    
+
     window.clear(sf::Color(50, 52, 55));
     // Dibuja el fondo del tablero
     window.draw(boardBackground);
@@ -41,8 +41,63 @@ void drawGame(sf::RenderWindow& window, const State& state, const sf::RectangleS
                 window.draw(aiCircle);
             }
         }
-    }    
+    }
+
+    // Dibuja el título
     window.draw(title);
+
+    // Dibuja los rectángulos y texto para mostrar el turno y las fichas
+    sf::RectangleShape turnIndicator(sf::Vector2f(140, 50));
+    turnIndicator.setPosition(10, 10);
+    turnIndicator.setFillColor(sf::Color(232, 95, 67));
+
+    sf::Font fontText;
+    if (!fontText.loadFromFile("Antone.ttf")) {
+        cerr << "Error al cargar la fuente" << endl;
+    }
+
+    sf::Text turnText;
+    turnText.setFont(fontText);
+    turnText.setCharacterSize(20);
+    turnText.setFillColor(sf::Color::White);
+
+    if (state.currentPlayer == playerToken) {
+        turnText.setString("Your Turn");
+    } else {
+        turnText.setString("Agent's Turn");
+    }
+
+    turnText.setPosition(20, 20);
+    window.draw(turnIndicator);
+    window.draw(turnText);
+
+    // Dibuja los rectángulos y texto para mostrar las fichas
+    sf::RectangleShape playerIndicator(sf::Vector2f(137, 30));
+    playerIndicator.setPosition(10,200);
+    playerIndicator.setFillColor((playerToken == 1 ? sf::Color(100, 100, 100) : sf::Color::White));
+
+    sf::Text playerText;
+    playerText.setFont(fontText);
+    playerText.setCharacterSize(15);
+    playerText.setFillColor((playerToken == 1 ? sf::Color::White : sf::Color(100, 100, 100)));
+    playerText.setString("You: " + std::string(playerToken == 1 ? "Black" : "White"));
+    playerText.setPosition(20, 205);
+    window.draw(playerIndicator);
+    window.draw(playerText);
+
+    sf::RectangleShape aiIndicator(sf::Vector2f(137, 30));
+    aiIndicator.setPosition(10, 250);
+    aiIndicator.setFillColor((aiToken == 1 ? sf::Color(100, 100, 100) : sf::Color::White));
+
+    sf::Text aiText;
+    aiText.setFont(fontText);
+    aiText.setCharacterSize(15);
+    aiText.setFillColor((aiToken == 1 ? sf::Color::White : sf::Color(100, 100, 100)));
+    aiText.setString("Agent: " + std::string(aiToken == 1 ? "Black" : "White"));
+    aiText.setPosition(20, 255);
+    window.draw(aiIndicator);
+    window.draw(aiText);
+
     window.display();
 }
 
